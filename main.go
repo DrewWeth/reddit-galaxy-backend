@@ -9,7 +9,6 @@ import (
 	"os"
 	"sort"
 	"strconv"
-	"strings"
 )
 
 func readCsv() [][]string {
@@ -69,11 +68,15 @@ func handler(w http.ResponseWriter, r *http.Request, records [][]string, rows ma
 }
 
 func handlerIndex(w http.ResponseWriter, r *http.Request, records [][]string) {
-	fmt.Fprintf(w, "%s", strings.Join(records[0], ","))
+	fmt.Fprintf(w, "%s", "Oh, Hello")
 }
 
 var cols map[int]string
 var rows map[string]int
+
+func enableCors(w *http.ResponseWriter) {
+	(*w).Header().Set("Access-Control-Allow-Origin", "*")
+}
 
 func main() {
 	records := readCsv()
@@ -94,22 +97,27 @@ func main() {
 	}
 
 	http.HandleFunc("/sample/", func(w http.ResponseWriter, r *http.Request) {
+		enableCors(&w)
 		json.NewEncoder(w).Encode(records[:1])
 	})
 
 	http.HandleFunc("/rows/", func(w http.ResponseWriter, r *http.Request) {
+		enableCors(&w)
 		json.NewEncoder(w).Encode(rows)
 	})
 
 	http.HandleFunc("/cols/", func(w http.ResponseWriter, r *http.Request) {
+		enableCors(&w)
 		json.NewEncoder(w).Encode(cols)
 	})
 
 	http.HandleFunc("/sub/", func(w http.ResponseWriter, r *http.Request) {
+		enableCors(&w)
 		handler(w, r, records, rows, cols)
 	})
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		enableCors(&w)
 		handlerIndex(w, r, records)
 	})
 
